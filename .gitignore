@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+.eggs/
+
+# Virtual environments
+.venv/
+env/
+venv/
+
+# Byte-compiled / cache
+*.mypy_cache/
+*.pytest_cache/
+.coverage
+htmlcov/
+
+# Docker
+*.pid
+*.seed
+*.pid.lock
+
+# SQLite / databases locales (si llegas a usarlas)
+*.db
+*.sqlite3
+
+# PyCharm
+*.iml
