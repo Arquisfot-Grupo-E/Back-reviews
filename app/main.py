@@ -19,7 +19,7 @@ app.add_middleware(
 
 # Registrar rutas
 app.include_router(books_router, prefix="/books", tags=["books"])
-app.include_router(reviews_router, prefix="/reviews", tags=["reviews"])
+app.include_router(reviews_router, prefix="/reviews", tags=["Reviews"])
 
 
 # Crear las tablas si no existen
