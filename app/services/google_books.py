@@ -21,6 +21,7 @@ async def search_books(query: str, max_results: int = 10):
     for item in data.get("items", []):
         volume_info = item.get("volumeInfo", {})
         books.append({
+            "id": item.get("id"),  
             "title": volume_info.get("title"),
             "authors": volume_info.get("authors", []),
             "publisher": volume_info.get("publisher"),
