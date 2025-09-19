@@ -17,3 +17,9 @@ class ReviewOut(BaseModel):
 
     class Config:
         from_attributes = True
+
+class ReviewUpdate(BaseModel):
+    content: str
+
+class KarmaVoteInput(BaseModel):
+    value: int  # +1 o -1
