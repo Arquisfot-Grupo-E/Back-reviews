@@ -13,6 +13,7 @@ class ReviewOut(BaseModel):
     content: str
     karma_score: int
     created_at: datetime
+    updated_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
