@@ -1,6 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api import books
+from app.db.base import Base
+from app.db.session import engine
+from app.models.review import Review, KarmaVote  
 
 app = FastAPI(title="Book Search API")
 
@@ -15,6 +18,10 @@ app.add_middleware(
 
 # Registrar rutas
 app.include_router(books.router, prefix="/books", tags=["books"])
+
+
+# Crear las tablas si no existen
+Base.metadata.create_all(bind=engine)
 
 @app.get("/")
 def root():
