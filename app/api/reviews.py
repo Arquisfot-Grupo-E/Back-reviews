@@ -15,6 +15,14 @@ def create_review(
     db: Session = Depends(get_db),
     user_id: UUID = Depends(get_current_user_id)
 ):
+    # Verificar si ya existe una reseña para este usuario y libro
+    existing_review = db.query(Review).filter(
+        Review.user_id == user_id,
+        Review.google_book_id == review.google_book_id
+    ).first()
+    if existing_review:
+        raise HTTPException(status_code=400, detail="Ya tienes una reseña para este libro")
+    
     new_review = Review(**review.dict(), user_id=user_id)
     db.add(new_review)
     db.commit()
