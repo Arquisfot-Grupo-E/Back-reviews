@@ -96,13 +96,27 @@ def vote_review(
         KarmaVote.voter_id == user_id
     ).first()
 
-    if existing_vote:
-        raise HTTPException(status_code=400, detail="Ya votaste esta reseña")
+    if vote.value not in [-1, 0, 1]:
+        raise HTTPException(status_code=400, detail="El valor del voto debe ser -1, 0 o 1")
 
-    new_vote = KarmaVote(review_id=id, voter_id=user_id, value=vote.value)
-    review.karma_score += vote.value
+    if vote.value == 0:
+        # Quitar el voto
+        if existing_vote:
+            review.karma_score -= existing_vote.value
+            db.delete(existing_vote)
+        # Si no hay voto, no hacer nada
+    else:
+        # Votar +1 o -1
+        if existing_vote:
+            # Cambiar el voto: restar el anterior y sumar el nuevo
+            review.karma_score -= existing_vote.value
+            existing_vote.value = vote.value
+        else:
+            # Crear nuevo voto
+            new_vote = KarmaVote(review_id=id, voter_id=user_id, value=vote.value)
+            db.add(new_vote)
+        review.karma_score += vote.value
 
-    db.add(new_vote)
     db.commit()
     db.refresh(review)
     return {"karma_score": review.karma_score}

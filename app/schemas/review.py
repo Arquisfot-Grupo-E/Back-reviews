@@ -22,4 +22,4 @@ class ReviewUpdate(BaseModel):
     content: str
 
 class KarmaVoteInput(BaseModel):
-    value: int  # +1 o -1
+    value: int  # -1, 0, 1
