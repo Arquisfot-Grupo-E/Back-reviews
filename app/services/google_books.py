@@ -31,3 +31,20 @@ async def search_books(query: str, max_results: int = 10):
         })
 
     return books
+
+async def get_book_by_id(book_id: str):
+    url = f"{settings.GOOGLE_BOOKS_API_URL}/{book_id}"
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url)
+        if response.status_code == 200:
+            data = response.json()
+            # Aquí puedes mapear `data` a tu schema Book
+            return {
+                "id": data.get("id"),
+                "title": data["volumeInfo"].get("title"),
+                "authors": data["volumeInfo"].get("authors", []),
+                "published_date": data["volumeInfo"].get("publishedDate"),
+                "description": data["volumeInfo"].get("description"),
+                "thumbnail": data["volumeInfo"].get("imageLinks", {}).get("thumbnail")
+            }
+        return None
