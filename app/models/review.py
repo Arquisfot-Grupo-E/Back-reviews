@@ -18,6 +18,11 @@ class Review(Base):
     # Relación con votos
     votes = relationship("KarmaVote", back_populates="review", cascade="all, delete-orphan")
 
+    # Restricción: un usuario solo puede tener una reseña por libro
+    __table_args__ = (
+        UniqueConstraint('user_id', 'google_book_id', name='unique_review_per_user_book'),
+    )
+
 
 class KarmaVote(Base):
     __tablename__ = "karma_votes"
