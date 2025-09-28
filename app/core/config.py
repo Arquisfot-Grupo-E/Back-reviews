@@ -15,6 +15,14 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
         extra = "ignore"
+        
+    # JWT Settings
+    SECRET_KEY: str
+    ALGORITHM: str
+
+    class Config:
+        env_file = ".env"
+        extra = "ignore"
 
 # Instancia global de settings
 settings = Settings()

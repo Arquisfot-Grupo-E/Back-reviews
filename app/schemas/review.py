@@ -17,7 +17,6 @@ class PyObjectId(str):
             raise ValueError("Invalid ObjectId")
         return str(v)
 
-    # 👇 AÑADE ESTE MÉTODO COMPLETO 👇
     @classmethod
     def __get_pydantic_json_schema__(
         cls, core_schema: core_schema.CoreSchema, handler: Any

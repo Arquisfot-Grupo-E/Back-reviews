@@ -10,3 +10,4 @@ python-dotenv
 pytest
 httpx
 pydantic-settings
+python-jose[cryptography]
