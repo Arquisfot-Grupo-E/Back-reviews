@@ -9,6 +9,7 @@ class ReviewCreate(BaseModel):
 class ReviewOut(BaseModel):
     id: int
     user_id: UUID
+    #user_id: int
     google_book_id: str
     content: str
     karma_score: int

@@ -9,6 +9,7 @@ class Review(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(UUID, nullable=False)  # viene del JWT
+    #user_id = Column(Integer, nullable=False)  # user_id con string
     google_book_id = Column(String, nullable=False)  # volumeId de Google Books
     content = Column(Text, nullable=False)
     karma_score = Column(Integer, default=0)
@@ -30,6 +31,7 @@ class KarmaVote(Base):
     id = Column(Integer, primary_key=True)
     review_id = Column(Integer, ForeignKey("reviews.id", ondelete="CASCADE"), nullable=False)
     voter_id = Column(UUID, nullable=False)  # también viene del JWT
+    #voter_id = Column(Integer, nullable=False)  # voter_id con string
     value = Column(Integer, nullable=False)  # +1 o -1
 
     # Restricción: un usuario solo puede votar una vez por reseña

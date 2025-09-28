@@ -3,18 +3,43 @@ from sqlalchemy.orm import Session
 from app.models.review import Review, KarmaVote
 from app.schemas.review import ReviewCreate, ReviewOut, ReviewUpdate, KarmaVoteInput
 from app.db.session import get_db
-from app.core.security import get_current_user_id
+from app.core.security import get_current_user_id 
+from app.core.auth import get_current_user 
 from uuid import UUID
 
 router = APIRouter()
+
+@router.get("/test")
+def test_simple():
+    """Endpoint simple para verificar que el router funciona"""
+    return {"message": "Reviews service funcionando correctamente"}
+
+@router.get("/test/auth")
+def test_auth(
+    user: dict = Depends(get_current_user),
+    user_id: int = Depends(get_current_user_id)
+):
+    """Endpoint para probar la autenticación JWT entre microservicios"""
+    return {
+        "message": "Autenticación exitosa entre back-users y back-reviews",
+        "jwt_payload": user,
+        "extracted_user_id": user_id,
+        "user_id_type": type(user_id).__name__,
+        "service": "back-reviews"
+    }
+
 
 @router.post("/", response_model=ReviewOut)
 def create_review(
     
     review: ReviewCreate,
     db: Session = Depends(get_db),
-    user_id: UUID = Depends(get_current_user_id)
+    user_id: UUID = Depends(get_current_user_id),
+    #user_id: int = Depends(get_current_user_id)
 ):
+    
+    print(f"user_id recibido: {user_id}, tipo: {type(user_id)}")
+    
     # Verificar si ya existe una reseña para este usuario y libro
     existing_review = db.query(Review).filter(
         Review.user_id == user_id,
@@ -30,11 +55,11 @@ def create_review(
     return new_review
 
 
-
 @router.get("/my-reviews", response_model=list[ReviewOut])
 def get_my_reviews(
     db: Session = Depends(get_db),
-    user_id: UUID = Depends(get_current_user_id)
+    #user_id: UUID = Depends(get_current_user_id)
+    user_id: int = Depends(get_current_user_id)
 ):
     return db.query(Review).filter(Review.user_id == user_id).order_by(Review.created_at.desc()).all()
 
@@ -44,7 +69,8 @@ def update_review_content(
     id: int,
     update: ReviewUpdate,
     db: Session = Depends(get_db),
-    user_id: UUID = Depends(get_current_user_id)
+    #user_id: UUID = Depends(get_current_user_id)
+    user_id: int = Depends(get_current_user_id)
 ):
     review = db.query(Review).filter(Review.id == id).first()
 
@@ -64,7 +90,8 @@ def update_review_content(
 def delete_review(
     id: int,
     db: Session = Depends(get_db),
-    user_id: UUID = Depends(get_current_user_id)
+    #user_id: UUID = Depends(get_current_user_id)
+    user_id: int = Depends(get_current_user_id)
 ):
     review = db.query(Review).filter(Review.id == id).first()
 
@@ -84,7 +111,8 @@ def vote_review(
     id: int,
     vote: KarmaVoteInput,
     db: Session = Depends(get_db),
-    user_id: UUID = Depends(get_current_user_id)
+    #user_id: UUID = Depends(get_current_user_id)
+    user_id: int = Depends(get_current_user_id)
 ):
     review = db.query(Review).filter(Review.id == id).first()
 
