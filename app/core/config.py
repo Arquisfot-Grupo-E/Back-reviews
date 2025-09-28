@@ -1,20 +1,20 @@
 from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
-    # Conexión principal a la base de datos
-    DATABASE_URL: str
+    # Conexión a MongoDB
+    MONGODB_URL: str
+    MONGO_DB_NAME: str
 
     # Config Google Books
     GOOGLE_BOOKS_API_URL: str
-
-    # Variables específicas de Postgres (útiles para inicializar el contenedor)
-    POSTGRES_USER: str
-    POSTGRES_PASSWORD: str
-    POSTGRES_DB: str
+    
+    # Variables para inicializar el contenedor de Mongo (leídas por docker-compose)
+    MONGO_USER: str
+    MONGO_PASSWORD: str
 
     class Config:
         env_file = ".env"
-        extra = "ignore"  # ignora cualquier variable adicional que no esté aquí
+        extra = "ignore"
 
 # Instancia global de settings
 settings = Settings()

@@ -1,8 +1,10 @@
+
 fastapi
 uvicorn[standard]
-sqlalchemy
-alembic
-psycopg2-binary
+# sqlalchemy  <- ELIMINADO
+# alembic  <- ELIMINADO
+# psycopg2-binary <- ELIMINADO
+pymongo[srv] # <-- AÑADIDO: Driver oficial de MongoDB
 pydantic[email]
 python-dotenv
 pytest
