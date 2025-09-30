@@ -1,3 +1,4 @@
+import logging
 from fastapi import APIRouter, HTTPException, Query
 from app.services.google_books import search_books, get_book_by_id
 from app.schemas.book import Book
@@ -12,9 +13,10 @@ async def search_books_endpoint(q: str = Query(..., description="Texto para busc
             raise HTTPException(status_code=404, detail="No se encontraron libros")
         return results
     except Exception as e:
+        logging.error(f"Error searching books for query '{q}': {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Error interno: {str(e)}")
 
-@router.get("/{book_id}", response_model=Book)
+@router.get("/id/{book_id}", response_model=Book)
 async def get_book(book_id: str):
     try:
         book = await get_book_by_id(book_id)
@@ -22,4 +24,5 @@ async def get_book(book_id: str):
             raise HTTPException(status_code=404, detail="Libro no encontrado")
         return book
     except Exception as e:
+        logging.error(f"Error fetching book with id '{book_id}': {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Error interno: {str(e)}")
