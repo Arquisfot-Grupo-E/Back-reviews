@@ -9,4 +9,6 @@ class Book(BaseModel):
     published_date: Optional[str] = None
     description: Optional[str] = None
     thumbnail: Optional[str] = None
+    categories: Optional[List[str]] = None
+    
 
