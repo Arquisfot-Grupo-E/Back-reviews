@@ -8,6 +8,8 @@ services:
       - .env
     depends_on:
       - mongodb # MODIFICADO: Depende de mongodb
+    networks:
+      - bookworm_network
 
   mongodb: # MODIFICADO: Servicio de MongoDB
     image: mongo:latest
@@ -19,10 +21,13 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
     volumes:
       - mongo_data:/data/db
-
-networks:
-  reviews_net:
-    driver: bridge
+    networks:
+      - bookworm_network
 
 volumes:
   mongo_data: # MODIFICADO: Volumen para MongoDB
+
+networks:
+  bookworm_network:
+    external: true
+    name: bookworm_network
