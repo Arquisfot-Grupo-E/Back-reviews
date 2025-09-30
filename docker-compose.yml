@@ -20,5 +20,9 @@ services:
     volumes:
       - mongo_data:/data/db
 
+networks:
+  reviews_net:
+    driver: bridge
+
 volumes:
   mongo_data: # MODIFICADO: Volumen para MongoDB
