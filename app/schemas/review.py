@@ -62,6 +62,10 @@ class ReviewOut(MongoBaseModel):
 class ReviewUpdate(BaseModel):
     content: str
     rating: Optional[int] = Field(None, ge=1, le=5) # <-- AÑADIDO: Opcional, pero si se provee, debe ser válido
+    class Config:
+        # Permitir que al menos uno de los campos esté presente
+        # Pero ninguno es obligatorio individualmente
+        from_attributes = True
 
 class KarmaVoteInput(BaseModel):
     value: int  # -1, 0, 1
