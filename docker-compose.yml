@@ -7,27 +7,44 @@ services:
     env_file:
       - .env
     depends_on:
-      - mongodb # MODIFICADO: Depende de mongodb
+      - mongodb
     networks:
-      - bookworm_network
+      - backend_network  # Recibe peticiones del gateway
+      - data_network     # Accede a MongoDB
 
-  mongodb: # MODIFICADO: Servicio de MongoDB
+  mongodb:
     image: mongo:latest
     container_name: fastapi_reviews_db
     ports:
-      - "27017:27017"
+      - "27017:27017"  # Exponer para desarrollo individual
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
     volumes:
       - mongo_data:/data/db
     networks:
-      - bookworm_network
+      - data_network  # Solo en red de datos
 
 volumes:
-  mongo_data: # MODIFICADO: Volumen para MongoDB
+  mongo_data:
 
+# =============================================================================
+# REDES SEGMENTADAS
+# =============================================================================
+# Back-reviews:
+#   - backend_network: Recibe peticiones del gateway
+#   - data_network: Accede a MongoDB
+#
+# MongoDB:
+#   - data_network: Red aislada de datos (sin internet en producción)
+#
+# PREREQUISITO: Ejecutar bash scripts/setup-networks.sh (en Middleware-Graphql)
+# =============================================================================
 networks:
-  bookworm_network:
+  backend_network:
     external: true
-    name: bookworm_network
+    name: backend_network
+  
+  data_network:
+    external: true
+    name: data_network
