@@ -11,3 +11,5 @@ pytest
 httpx
 pydantic-settings
 python-jose[cryptography]
+slowapi  # Rate limiting para FastAPI
+pyjwt  # Para decodificar JWT

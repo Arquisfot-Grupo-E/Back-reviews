@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Body
+from fastapi import APIRouter, Depends, HTTPException, Body, Request
 from pymongo.collection import Collection
 from app.schemas.review import ReviewCreate, ReviewOut, ReviewUpdate, KarmaVoteInput
 from app.db.database import get_review_collection
@@ -7,7 +7,16 @@ from uuid import UUID
 from datetime import datetime
 from bson import ObjectId
 from pymongo.errors import DuplicateKeyError
+from slowapi import Limiter
+from slowapi.util import get_remote_address
 
+
+# ============================================
+# RATE LIMITING CONFIGURATION
+# ============================================
+
+# Crear limiter para este router
+limiter = Limiter(key_func=get_remote_address)
 
 router = APIRouter()
 
@@ -18,7 +27,9 @@ def document_to_dict(doc):
     return doc
 
 @router.post("/", response_model=ReviewOut)
+@limiter.limit("10/minute")  # Máximo 10 reseñas nuevas por minuto
 def create_review(
+    request: Request,
     review: ReviewCreate,
     collection: Collection = Depends(get_review_collection),
     user_id: UUID = Depends(get_current_user_id)
@@ -45,7 +56,9 @@ def create_review(
 
 
 @router.get("/my-reviews", response_model=list[ReviewOut])
+@limiter.limit("60/minute")  # Lectura: más permisivo
 def get_my_reviews(
+    request: Request,
     collection: Collection = Depends(get_review_collection),
     user_id: UUID = Depends(get_current_user_id)
 ):
@@ -54,7 +67,9 @@ def get_my_reviews(
 
 
 @router.patch("/{id}", response_model=ReviewOut)
+@limiter.limit("20/minute")  # Actualización: medianamente restrictivo
 def update_review(  # <-- Nombre cambiado para mayor claridad
+    request: Request,
     id: str,
     update: ReviewUpdate,
     db: Collection = Depends(get_review_collection), # <-- Cambiado nombre a 'db' o 'collection'
@@ -88,7 +103,9 @@ def update_review(  # <-- Nombre cambiado para mayor claridad
 
 
 @router.delete("/{id}")
+@limiter.limit("20/minute")  # Eliminación: medianamente restrictivo
 def delete_review(
+    request: Request,
     id: str,
     collection: Collection = Depends(get_review_collection),
     user_id: UUID = Depends(get_current_user_id)
@@ -111,7 +128,9 @@ def delete_review(
 
 
 @router.post("/{id}/vote", response_model=ReviewOut)
+@limiter.limit("30/minute")  # Votos: restrictivo para evitar spam
 def vote_review(
+    request: Request,
     id: str,
     vote: KarmaVoteInput,
     collection: Collection = Depends(get_review_collection),
@@ -152,7 +171,9 @@ def vote_review(
     return document_to_dict(updated_review)
 
 @router.get("/users/{user_id}", response_model=list[ReviewOut])
+@limiter.limit("60/minute")  # Lectura pública: permisivo
 def get_reviews_by_user(
+    request: Request,
     user_id: UUID,
     collection: Collection = Depends(get_review_collection)
 ):
@@ -161,12 +182,15 @@ def get_reviews_by_user(
 
 
 @router.get("/book/{google_book_id}", response_model=list[ReviewOut])
+@limiter.limit("100/minute")  # Lectura de reseñas de libros: muy permisivo (caso de uso común)
 def get_reviews_for_book(
+    request: Request,
     google_book_id: str,
     collection: Collection = Depends(get_review_collection)
 ):
     """
     Obtiene todas las reseñas para un libro específico, ordenadas por fecha de creación descendente.
+    Rate limit: 100 req/min (endpoint muy usado)
     """
     reviews_cursor = collection.find(
         {"google_book_id": google_book_id}
